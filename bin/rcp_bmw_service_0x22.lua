@@ -1,7 +1,7 @@
--- BMW OBD Servie 0x22 Script
--- Version, 5.2.0,
+-- RCP BMW Servie 0x22 Script
+-- Version, 5.2.0
 -- Copyright (c) 2023 The SECRET Ingredient!
--- MIT License
+-- GNU General Public License v3.0
 --
 -- Select BMW OBD Service 0x22 PID Maps Available at
 -- https://thesecretingredient.neocities.org

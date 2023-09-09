@@ -1,11 +1,12 @@
 #!/bin/sh
-## Copyright (c) 2023 The SECRET Ingredient!
+# RCP BMW Servie 0x22 Script
+# Copyright (c) 2023 The SECRET Ingredient!
 # GNU General Public License v3.0
 #
 
 # Get Project Name and Version
-project_name=`sed -n -e 's/\t//g ; s/"name":\ "\(.*\)",.*/\1/p' package.json`
-project_version=`sed -n -e 's/\t//g ; s/"version":\ "\(.*\)"/\1/p' package.json`
+project_name=`sed -n -e '/name/s/.*: "\(.*\)",/\1/p' package.json | head -1`
+project_version=`sed -n -e '/version/s/.*: "\(.*\)",/\1/p' package.json | head -1`
 
 # Set Base Directory
 project_root=$(cd $(dirname $0); pwd)
@@ -27,8 +28,8 @@ echo "PROJECT_MAKE     = "$project_make
 echo "PROJECT_BUID     = "$project_build
 
 # Clean Make and Bin Directory
-rm $project_make/*.* >> $project_make/junk.out
-rm $project_build/*.* >> $project_make/junk.out
+rm $project_make/*.*
+rm $project_build/*.*
 
 # Start Build With Comment Header
 cat $project_resource/head.lua > $project_make/make.out
@@ -46,5 +47,5 @@ SED_SCRIPT=`sed -e '/^#/d' $project_resource/sed.md`
 sed -i'.sed' -e "$SED_SCRIPT" $project_make/make.out
 
 # Pruduce Assebmled Lua Script
-cat $project_make/make.out | sed -e "s/<version>/$project_version/g" > $project_build/$project_name.lua
+cat $project_make/make.out | sed -e "s/<version>/$project_version/g" > "$project_build/$project_name.lua"
 

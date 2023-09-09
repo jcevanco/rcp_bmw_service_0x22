@@ -1,4 +1,4 @@
-# bmw_obd_service_0x22
+# rcp_bmw_service_0x22
 BMW OBD Servie 0x22 Script
 Copyright (c) 2023 The SECRET Ingredient!
 GNU General Public License v3.0

@@ -1,45 +1,10 @@
+# RCP BMW Servie 0x22 Script
+# Copyright (c) 2023 The SECRET Ingredient!
+# GNU General Public License v3.0
+#
 # Unmanaged Folders
-/make
 /tools
 
-# Compiled Lua sources
-luac.out
-
-# luarocks build files
-*.src.rock
-*.zip
-*.tar.gz
-
-# Object files
-*.o
-*.os
-*.ko
-*.obj
-*.elf
-
-# Precompiled Headers
-*.gch
-*.pch
-
-# Libraries
-*.lib
-*.a
-*.la
-*.lo
-*.def
-*.exp
-
-# Shared objects (inc. Windows DLLs)
-*.dll
-*.so
-*.so.*
-*.dylib
-
-# Executables
-*.exe
+# Make Files
 *.out
-*.app
-*.i*86
-*.x86_64
-*.hex
-
+*.sed
