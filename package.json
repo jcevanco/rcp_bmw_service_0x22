@@ -1,7 +1,7 @@
 {
 	"name": "bmw_obd_service_0x22",
 	"version": "5.2.0",
-	"description": "Lua for use with RaceCapture (by AutoSportLabs) hardware to enable collection of realtime OBDII Service 0x22 data from various ECU modules of BMW vehicles.",
+	"description": "Lua script for use with RaceCapture motorsports telemetry systems. This script enables RaceCapture systems to perform OBDII Service 0x22 querries on BMW vehicles.",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/jcevanco/bmw_obd_service_0x22.git"
