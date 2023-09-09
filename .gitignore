@@ -1,3 +1,7 @@
+# Unmanaged Folders
+/make
+/tools
+
 # Compiled Lua sources
 luac.out
 
