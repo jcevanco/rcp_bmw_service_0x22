@@ -2,9 +2,14 @@
 # Copyright (c) 2023 The SECRET Ingredient!
 # GNU General Public License v3.0
 #
-# Unmanaged Folders
-/tools
-/node_modules
+
+# Project dependencies
+.cache
+tools
+node_modules
+yarn-error.log
+package-lock.json
+yarn.lock
 
 # Make Files
 *.out
