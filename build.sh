@@ -5,14 +5,19 @@
 #
 
 # Get Project Name and Version
-project_name=`sed -n -e '/name/s/.*: "\(.*\)",/\1/p' package.json | head -1`
-project_version=`sed -n -e '/version/s/.*: "\(.*\)",/\1/p' package.json | head -1`
+project_name=`sed -n -e '/name/ { s/.*: "\(.*\)",/\1/p
+                                  q
+                                }' package.json`
+project_version=`sed -n -e '/version/ { s/.*: "\(.*\)",/\1/p
+                                        q
+                                      }' package.json`
 
-# Set Base Directory
+# Set Project Root Directory
 project_root=$(cd $(dirname $0); pwd)
 
 # Set Project Directories
 project_source=$project_root/src
+project_include=$project_root/src/inc
 project_resource=$project_root/res
 project_make=$project_root/make
 project_build=$project_root/bin
@@ -23,29 +28,65 @@ echo "PROJECT_VERSION  = "$project_version
 echo "PROJECT_ROOT     = "$project_root
 echo
 echo "PROJECT_SOURCE   = "$project_source
+echo "project_INCLUDE  = "$project_include
 echo "PROJECT_RESOURCE = "$project_resource
 echo "PROJECT_MAKE     = "$project_make
 echo "PROJECT_BUID     = "$project_build
+echo
 
 # Clean Make and Bin Directory
-rm $project_make/*.*
-rm $project_build/*.*
+rimraf $project_make $project_build
 
 # Start Build With Comment Header
+echo "Building Project"
 cat $project_resource/head.lua > $project_make/make.out
 
 # Import Required Modules
-cat $project_source/main.lua > $project_make/require.out
+echo
+echo "Import Required Modules"
 
-# Minimize Script with LuaMin
-luamin -f $project_make/require.out >> $project_make/make.out
+# Get List of Required Modules
+cat $project_source/main.lua > $project_make/require.out
+sed -n -e '/require/s/.*(\(.*\)).*/\1/p' $project_make/require.out | while read i
+do
+    # Import Required Module
+    echo "Module: $i.lua"
+    sed -e "/$i/ { r $project_include/$i.lua
+                   d
+                 }" -i'.sed' $project_make/require.out
+done
+
+# Minimize Function Names
+echo
+echo "Process Script Functions"
+cat $project_make/require.out > $project_make/functions.out
+
+# Get List of Function Names
+sed -n -e '/function/s/.* \(.*\)(.*/\1/p' $project_make/functions.out | \
+sed -e '/onTick/d' | \
+while read i
+do
+    # Minimize Function Name in Script
+    echo "Function: $i"
+    j=`echo "$i" | sed -n -e 's/\([a-z]\).*\([A-Z]\).*/_\1\2/p'`
+    sed -e "s/$i(/$j(/g" -i'.sed' $project_make/functions.out
+done
+
+# Minimize Script with Luamin
+luamin_ver=`luamin -v`
+echo
+echo "Minimize Lua Script - luamin, $luamin_ver"
+luamin -f $project_make/functions.out >> $project_make/make.out
 
 # Get sed Script for Post Processing
 SED_SCRIPT=`sed -e '/^#/d' $project_resource/sed.md`
 
 # Run sed Commands to Adjust Layout
-sed -i'.sed' -e "$SED_SCRIPT" $project_make/make.out
+sed -e "$SED_SCRIPT" -i'.sed' $project_make/make.out
 
 # Pruduce Assebmled Lua Script
 cat $project_make/make.out | sed -e "s/<version>/$project_version/g" > "$project_build/$project_name.lua"
 
+echo
+echo "Build Complete: $project_name, v.$project_version"
+echo

@@ -1,4 +1,4 @@
--- RCP BMW Servie 0x22 Script
+-- RCP BMW Servie 0x22 Query Optimization Script
 -- Copyright (c) 2023 The SECRET Ingredient!
 -- GNU General Public License v3.0
 --
@@ -18,9 +18,10 @@
 -- Select BMW OBD Service 0x22 PID Maps Available at
 -- https://thesecretingredient.neocities.org
 --
+
 -- Get Next Secheduled Query
 -- Uses the Same Scheduling Method as the 
--- RaceCapture Device Firmware
+-- RaceCapture Device OBDII Query Scheduler
 function getQuery()
 
   -- Test for Active Query in Progress

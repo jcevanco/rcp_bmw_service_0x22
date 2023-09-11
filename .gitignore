@@ -4,6 +4,7 @@
 #
 # Unmanaged Folders
 /tools
+/node_modules
 
 # Make Files
 *.out

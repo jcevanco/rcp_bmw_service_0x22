@@ -13,7 +13,6 @@
   "dependencies": {
   },
   "scripts": {
-    "build": "sh build.sh"
   },
   "devDependencies": {
   },

@@ -29,7 +29,7 @@ function recvMessage(index)
   if id ~= nil then
 
     -- Log CAN Message Frame if Logging is Enabled
-    if gc_log == true then logCANData(gc_can, id, data) end
+    if gc_log == true then logCANData(gc_can, id, ext, data) end
 
     -- Check CAN-TP Header for Single Frame Response
     if bit.band(data[2], 0xF0) == 0x00 then

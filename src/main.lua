@@ -149,7 +149,12 @@ for key, table in pairs(gc_list) do
 
 end
 
--- Send Request Messages
+-- Required Modules
+require (get_query)
+require (recv_message_multi)
+require (log_can)
+
+-- Send Query Messages
 function sendQuery()
   
   -- Get Scheduled Query
@@ -176,9 +181,6 @@ function sendQuery()
 
 end
 
--- Import Get Query Module
-require "get_query"
-
 -- Send Request Message
 function sendMessage(id, message)
   
@@ -186,7 +188,7 @@ function sendMessage(id, message)
   local success = txCAN(gc_can, id, 0, message, gc_timeout)
 
   -- Log CAN Messages if Logging is Enabled
-  if success == 1 and gc_log == true then logCANData(gc_can, id, message) end 
+  if success == 1 and gc_log == true then logCANData(gc_can, id, nil, message) end 
 
   -- Return Data
   return success 
@@ -219,9 +221,6 @@ function recvResponse()
   end
 
 end
-
--- Import Receive Message Module
-require "recv_message"
 
 -- Process Payload Data
 function processData(id, data)
@@ -283,22 +282,6 @@ function signedInteger(data, size)
   return (data >= math.pow(2, (size * 8 - 1)) and data - math.pow(2, (size * 8 ))) or data 
 end
   
--- Output CAN Bus Data to Info Log
-function logCANData(bus, id, data)
-
-  -- Scope Variables
-  local y, m, d, h, mi, s, ms = getDateTime()
-
-  -- Build Output String
-  local output = string.format("%04d-%02d-%02d %02d:%02d:%02d.%03d %9d", y, m, d, h, mi, s, ms, getUptime())
-  output = output .. string.format(" %1d " .. (ext == 1 and "%10d 0x%08X" or "%4d 0x%03X") .." %02d", bus + 1, id, id, #data)
-  output = output .. string.format(string.rep(" 0x%02X", #data), unpack(data))
-  
-  -- Send Output to Log
-  println(output)
-
-end
-
 -- Process Tick Events 
 function onTick()
 
