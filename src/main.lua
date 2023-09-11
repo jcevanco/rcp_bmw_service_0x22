@@ -79,19 +79,8 @@
 --  17 - Average Network Latency (ms)
 --
 
-local gc_list = {
-  -- char data type (8-Bit Integer)
-  [ 0x5512 ] = {0x12, 'AmbientTemp',   1, 1, 0, 200,    'F',     'u', 0.9, 1, -40},
-  [ 0x59FA ] = {0x12, 'Ign_Angle',    25, 1, nil, nil,  '*',     's', 0.75, 1, 0},
-
-  -- integer data type (16-Bit Ingeter)
-  [ 0x4205 ] = {0x12, 'Boost_Press',  25, 2, 0, 30,     'kPa',   'u', 20, 2560, 0},
-  [ 0x4300 ] = {0x12, 'Engine_Temp',   1, 1, 0, 300,    'F',     's', 1.35, 1, -54.4},
-
-  -- long data type (32-Bit Ingeter)
-  [ 0x558F ] = {0x12, 'FPDM_Hours',    1,  1, nil, nil, 'hours', 'u', 0.5, 1, 0},
-  [ 0x558E ] = {0x12, 'FPDM_Miles',    1,  1, nil, nil, 'miles', 's', 0.62, 1, 0},
-}
+-- Import PID Configuration
+require (sample_pid)
 
 -- Define Battery Voltage threshold for Polling.
 -- Service 0x22 PID Requestes will not be sent if the
