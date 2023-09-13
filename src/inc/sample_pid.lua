@@ -19,7 +19,7 @@
 -- https://thesecretingredient.neocities.org
 --
 
--- Define OBD Service 0x22 PID List to poll in Key-Table Pairs
+-- The OBD Service 0x22 PID List is configured in Lua Key-Table Pairs as follows.
 -- 
 -- [  KEY   ] = {                     TABLE                          },         
 -- [ 0x4201 ] = {0x12, 'AAP', 1, 1, nil, nil, 'kPa', 'u', 10, 2560, 0},
@@ -33,7 +33,7 @@
 --  RaceCapture Virtual Channel Configuration
 --
 --  2  - RaceCapture Channel Name (12 Character Maximum)
---  3  - Sample Rate in Hz
+--  3  - Priority (low - 1, 5, 10, 25, 50 - high) 
 --  4  - Precision (Number of decimals to display)
 --  5  - Minimum Value [optional - can be nil] 
 --  6  - Maximum Value [optional - can be nil]

@@ -34,8 +34,12 @@ echo "PROJECT_MAKE     = "$project_make
 echo "PROJECT_BUID     = "$project_build
 echo
 
-# Clean Make and Bin Directory
-rimraf $project_make $project_build
+# Clean Make and Build Directory
+node_modules/.bin/rimraf $project_make $project_build
+
+# Create Make and Build Directory
+mkdir $project_make
+mkdir $project_build
 
 # Start Build With Comment Header
 echo "Building Project"
@@ -73,10 +77,10 @@ do
 done
 
 # Minimize Script with Luamin
-luamin_ver=`luamin -v`
+luamin_ver=`node_modules/.bin/luamin -v`
 echo
 echo "Minimize Lua Script - luamin, $luamin_ver"
-luamin -f $project_make/functions.out >> $project_make/make.out
+node_modules/.bin/luamin -f $project_make/functions.out >> $project_make/make.out
 
 # Get sed Script for Post Processing
 SED_SCRIPT=`sed -e '/^#/d' $project_resource/sed.md`

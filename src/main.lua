@@ -29,20 +29,21 @@
 -- [lua] Failure: Failed to load script
 -- 
 -- Minificaion of the script has been tested and verified using luamin. 
--- https://github.com/mathiasbynens/luamin.git
 -- 
 -- The Central Gateway Module will not simultaneously process Service 0x01
 -- and Service 0x22 queries. In order for Service 0x22 queries to return
 -- any useful data, OBD-II must be disabled in the RaccCapture device 
 -- configuration. Channel mappings can exist, but OBD-II must be disabled.
 --
--- Observed average CAN latency for single frame response queries is 15-20 ms.
--- Observed average CAN latency for multi frame response queries is 20-25 ms.
+-- Observed average CAN latency for single frame response queries is 14-17 ms.
+-- Observed average CAN latency for multi frame response queries is 20-23 ms.
 --
 -- The OBDII query scheduler used in this script uses the same scheduling
--- method and algorythm as the RaceCapture device firmware.
+-- method and algorithm as the RaceCapture device firmware. The algorithm uses
+-- a bubble up method where each PID rises to the top of the query stack based
+-- on it's configured priority (Sample Rate).
 
--- Define OBD Service 0x22 PID List to poll in Key-Table Pairs
+-- The OBD Service 0x22 PID List is configured in Lua Key-Table Pairs as follows.
 -- 
 -- [  KEY   ] = {                     TABLE                          },         
 -- [ 0x4201 ] = {0x12, 'AAP', 1, 1, nil, nil, 'kPa', 'u', 10, 2560, 0},
@@ -80,7 +81,7 @@
 --
 
 -- Import PID Configuration
-require (sample_pid)
+require (supra_pid)
 
 -- Define Battery Voltage threshold for Polling.
 -- Service 0x22 PID Requestes will not be sent if the
@@ -107,7 +108,12 @@ local gc_delay = 2
 -- Enable/Disable CAN Bus Logging
 -- true = Enabled
 -- false = Disabled
-local gc_log = true
+local gc_log = false
+
+-- Enable/Disable PID Statistics Logging
+-- true = Enabled
+-- false = Disabled
+local gc_stats = true
 
 --
 -- END OF USER CONFIGURATION OPTIONS
@@ -138,11 +144,6 @@ for key, table in pairs(gc_list) do
 
 end
 
--- Required Modules
-require (get_query)
-require (recv_message_multi)
-require (log_can)
-
 -- Send Query Messages
 function sendQuery()
   
@@ -170,14 +171,63 @@ function sendQuery()
 
 end
 
+-- Get Next Secheduled Query
+-- Uses the Same Scheduling Method as the 
+-- RaceCapture Device OBDII Query Scheduler
+function getQuery()
+
+  -- Test for Active Query in Progress
+  if (getUptime() - g_lst_qry > gc_timeout) then
+
+    -- Test for Delay in Tx after Rx
+    if (getUptime() - gc_delay > g_lst_rsp) then
+
+      -- Initialize Scheduled Key, Factor and Max Factor
+      local sch_key, factor, max_factor = nil, 0, 0
+
+      -- Process Channel Priority
+      for key, table in pairs(gc_list) do
+
+        -- Update Channel Priority (Increment by Sample Rate)
+        table[13] = table[13] + table[3]
+
+        -- Calculate Schedule Factor (Schedule Passes Since Last Selection)
+        factor = table[13] / table[3]
+
+        -- Evaluate Scheduling Critera
+        -- Priority > Maximum Sample Rate (Trigger Threshold)
+        -- Most Schedule Passes for Channels Above Trigger Threshold
+        if (table[13] > g_smp_max and factor > max_factor) then 
+          sch_key, max_factor = key, factor 
+        end	
+
+      end
+
+      -- Test for Valid Schedule Key
+      if (sch_key ~= nil) then
+
+        -- Reset Priority for Scheduled Channel
+        gc_list[sch_key][13] = 0
+
+        -- Return Scheduled Channel Key
+        return sch_key
+
+      end
+
+    end
+
+  end
+
+end
+
 -- Send Request Message
-function sendMessage(id, message)
+function sendMessage(id, data)
   
   -- Scope Variables
-  local success = txCAN(gc_can, id, 0, message, gc_timeout)
+  local success = txCAN(gc_can, id, 0, data, gc_timeout)
 
   -- Log CAN Messages if Logging is Enabled
-  if success == 1 and gc_log == true then logCANData(gc_can, id, nil, message) end 
+  if success == 1 and gc_log == true then logCANData(gc_can, id, data) end 
 
   -- Return Data
   return success 
@@ -211,6 +261,9 @@ function recvResponse()
 
 end
 
+-- Required Modules (Receive Message)
+require (recv_message_multi)
+
 -- Process Payload Data
 function processData(id, data)
 
@@ -241,9 +294,9 @@ function processData(id, data)
       -- Update Channel Value
       setChannel(gc_list[key][12], (value * gc_list[key][9] / gc_list[key][10] + gc_list[key][11]))
 
-      -- Log Channel Statistics
-      if gc_log == true then
-
+      -- Log PID Statistics if Logging is Enabled
+      if gc_stats == true then
+      
         -- Update Channel Statistics
         local ts = getUptime()
         gc_list[key][16] = ( gc_list[key][15] ~= 0 and ( ( gc_list[key][14] * gc_list[key][16] ) + ( ts - gc_list[key][15] ) ) /  ( gc_list[key][14] + 1 ) or 0 )
@@ -254,7 +307,7 @@ function processData(id, data)
 
         -- Updte Channel Last Update Timestamp
         gc_list[key][15] = ts
-
+      
       end
 
       -- Return Success
@@ -271,6 +324,22 @@ function signedInteger(data, size)
   return (data >= math.pow(2, (size * 8 - 1)) and data - math.pow(2, (size * 8 ))) or data 
 end
   
+-- Output CAN Bus Data to Info Log
+function logCANData(bus, id, data)
+
+  -- Scope Variables
+  local y, m, d, h, mi, s, ms = getDateTime()
+
+  -- Build Output String
+  local output = string.format("%04d-%02d-%02d %02d:%02d:%02d.%03d %9d", y, m, d, h, mi, s, ms, getUptime())
+  output = output .. string.format(" %1d %4d 0x%03X %02d", bus + 1, id, id, #data)
+  output = output .. string.format(string.rep(" 0x%02X", #data), unpack(data))
+  
+  -- Send Output to Log
+  println(output)
+
+end
+
 -- Process Tick Events 
 function onTick()
 

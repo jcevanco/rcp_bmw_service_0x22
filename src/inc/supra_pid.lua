@@ -19,7 +19,7 @@
 -- https://thesecretingredient.neocities.org
 --
 
--- Define OBD Service 0x22 PID List to poll in Key-Table Pairs
+-- The OBD Service 0x22 PID List is configured in Lua Key-Table Pairs as follows.
 -- 
 -- [  KEY   ] = {                     TABLE                          },         
 -- [ 0x4201 ] = {0x12, 'AAP', 1, 1, nil, nil, 'kPa', 'u', 10, 2560, 0},
@@ -33,7 +33,7 @@
 --  RaceCapture Virtual Channel Configuration
 --
 --  2  - RaceCapture Channel Name (12 Character Maximum)
---  3  - Sample Rate in Hz
+--  3  - Priority (low - 1, 5, 10, 25, 50 - high) 
 --  4  - Precision (Number of decimals to display)
 --  5  - Minimum Value [optional - can be nil] 
 --  6  - Maximum Value [optional - can be nil]
@@ -57,13 +57,13 @@
 --
 
 local gc_list = {
---    [ 0x4201 ] = {0x12, 'AAP',    1,  1, nil, nil, 'kPa', 'u', 10, 2560, 0},  
+--    [ 0x4201 ] = {0x12, 'AAP',    1,  1, 0, 200,   'kPa', 'u', 10, 2560, 0},  
     [ 0x4205 ] = {0x12, 'Boost',  50, 2, 0, 30,    'psi', 'u', 1,8825.26,0},
     [ 0x4650 ] = {0x12, 'TFT',    1,  1, 0, 300,   'F'  , 'u', 1.35, 1, -54.4}, 
---    [ 0x4A2D ] = {0x12, 'MAP',    25, 1, nil, nil, 'kPa', 'u', 20, 2560, 0},
-    [ 0x56D7 ] = {0x12, 'FRP',    1,  1, nil, nil, 'MPa', 'u', 1, 500, 0},
+--    [ 0x4A2D ] = {0x12, 'MAP',    25, 1, 0, 300,   'kPa', 'u', 20, 2560, 0},
+    [ 0x56D7 ] = {0x12, 'FRP',    1,  1, 0, 50,    'MPa', 'u', 1, 500, 0},
     [ 0x580F ] = {0x12, 'IAT',    1,  1, 0, 200,   'F',   'u', 1.35, 1, -54.4},
-    [ 0x586F ] = {0x12, 'EOP',    1,  1, 0, 100,   'psi', 's', 14.696, 1013.25, 0}, 
+    [ 0x586F ] = {0x12, 'EOP',    2,  1, 0, 100,   'psi', 's', 14.696, 1013.25, 0}, 
     [ 0x5889 ] = {0x12, 'Lambda', 50, 2, 0, 2,     '',    'u', 16, 65535, 0}, 
     [ 0x5890 ] = {0x12, 'CRT',    1,  1, 0, 300,   'F',   'u', 1.35, 1, -54.4},
     [ 0x59FA ] = {0x12, 'Spark',  25, 1, nil, nil, '*',   's', 0.75, 1, 0},
