@@ -28,7 +28,9 @@
 -- [lua] Startup script error: (not enough memory)
 -- [lua] Failure: Failed to load script
 -- 
--- Minificaion of the script has been tested and verified using luamin. 
+-- Minification of the script has been tested and verified using luamin. 
+-- Minification can be performed by executing the build script from a
+-- command line at the project root directory: sh build.sh
 -- 
 -- The Central Gateway Module will not simultaneously process Service 0x01
 -- and Service 0x22 queries. In order for Service 0x22 queries to return
@@ -40,8 +42,9 @@
 --
 -- The OBDII query scheduler used in this script uses the same scheduling
 -- method and algorithm as the RaceCapture device firmware. The algorithm uses
--- a bubble up method where each PID rises to the top of the query stack based
--- on it's configured priority (Sample Rate).
+-- a bubble up method where each PID rises to the top of the query stack at a rate
+-- that is based on the PID configured priority (Sample Rate) and the number of number
+-- of times the scheduler has run without selecting the PID.
 
 -- The OBD Service 0x22 PID List is configured in Lua Key-Table Pairs as follows.
 -- 
@@ -80,8 +83,8 @@
 --  17 - Average Network Latency (ms)
 --
 
--- Import PID Configuration
-require (supra_pid)
+-- Import Required Module (PID Configuration)
+require (pid_list)
 
 -- Define Battery Voltage threshold for Polling.
 -- Service 0x22 PID Requestes will not be sent if the
@@ -110,7 +113,7 @@ local gc_delay = 2
 -- false = Disabled
 local gc_log = false
 
--- Enable/Disable PID Statistics Logging
+-- Enable/Disable PID Statistical Logging
 -- true = Enabled
 -- false = Disabled
 local gc_stats = true
@@ -123,7 +126,7 @@ local gc_stats = true
 setTickRate(1000)
 
 -- Define Global Message Variables
-local g_smp_max, g_lst_qry, g_lst_rsp = 0, 0, 0
+local g_pri_max, g_lst_qry, g_lst_rsp = 0, 0, 0
 
 -- Garbage Collection
 local g_garbage = 0
@@ -132,28 +135,27 @@ local g_garbage = 0
 setCANfilter(gc_can, 0, 0, gc_resp_id, gc_resp_msk)
 
 -- Build RaceCapture Virtual Channels
--- TODO: Check For and Implement Size Limit for Enginering Units
 for key, table in pairs(gc_list) do
 
   -- Create RaceCapture Virtual Channel and Set Initial Chanel Statistics
   table[12] = addChannel(string.sub(table[2], 1, 11), unpack(table, 3, 6), string.sub(table[7], 1, 7))
   table[13], table[14], table[15], table[16], table[17] = 0, 0, 0, 0, 0
 
-  -- Set Max Sample Rate (Used by Query Scheduler)
-  g_smp_max = math.max(g_smp_max, table[3])
+  -- Set Max Priority (Used by Query Scheduler)
+  g_pri_max = math.max(g_pri_max, table[3])
 
 end
 
 -- Send Query Messages
 function sendQuery()
   
-  -- Get Scheduled Query
+  -- Get The Next Scheduled Query
   local key = getQuery()
 
-  -- Verify Scheduled Query
+  -- Verify A Query is Scheduled
   if (key ~= nil) then
   
-    -- Send Message and Update Channel Statistics
+    -- Send Query Message and Update Channel Statistics
     if sendMessage(gc_send_id, {gc_list[key][1], 0x03, 0x22, bit.band(bit.rshift(key, 8), 0xFF), bit.band(key, 0xFF)}) == 1 then
       
       -- Set Last Query Timestamp
@@ -162,7 +164,7 @@ function sendQuery()
       -- Update Channel Query Count
       gc_list[key][14] = gc_list[key][14] + 1
 
-      -- Query Sent
+      -- Receive Response to Query
       recvResponse()
 
     end
@@ -171,9 +173,7 @@ function sendQuery()
 
 end
 
--- Get Next Secheduled Query
--- Uses the Same Scheduling Method as the 
--- RaceCapture Device OBDII Query Scheduler
+-- Get th Next Secheduled Query
 function getQuery()
 
   -- Test for Active Query in Progress
@@ -182,23 +182,23 @@ function getQuery()
     -- Test for Delay in Tx after Rx
     if (getUptime() - gc_delay > g_lst_rsp) then
 
-      -- Initialize Scheduled Key, Factor and Max Factor
-      local sch_key, factor, max_factor = nil, 0, 0
+      -- Initialize Scheduled Key, Count and Max Count
+      local sch_key, count, max_count = nil, 0, 0
 
       -- Process Channel Priority
       for key, table in pairs(gc_list) do
 
-        -- Update Channel Priority (Increment by Sample Rate)
+        -- Update Channel Query Stack Position (Increment by Priority)
         table[13] = table[13] + table[3]
 
-        -- Calculate Schedule Factor (Schedule Passes Since Last Selection)
-        factor = table[13] / table[3]
+        -- Calculate Schedule Pass Count (Schedule Passes Since Last Selection)
+        count = table[13] / table[3]
 
         -- Evaluate Scheduling Critera
-        -- Priority > Maximum Sample Rate (Trigger Threshold)
+        -- Position > Maximum Priority (Trigger Threshold)
         -- Most Schedule Passes for Channels Above Trigger Threshold
-        if (table[13] > g_smp_max and factor > max_factor) then 
-          sch_key, max_factor = key, factor 
+        if (table[13] > g_pri_max and count > max_count) then 
+          sch_key, max_count = key, count 
         end	
 
       end
@@ -220,17 +220,19 @@ function getQuery()
 
 end
 
--- Send Request Message
+-- Send Query Message
 function sendMessage(id, data)
   
-  -- Scope Variables
-  local success = txCAN(gc_can, id, 0, data, gc_timeout)
+  -- Send Message
+  if txCAN(gc_can, id, 0, data, gc_timeout) == 1 then
 
-  -- Log CAN Messages if Logging is Enabled
-  if success == 1 and gc_log == true then logCANData(gc_can, id, data) end 
+    -- Log CAN Messages if Logging is Enabled
+    if gc_log == true then logCANData(gc_can, id, data) end 
 
-  -- Return Data
-  return success 
+    -- Return Success
+    return 1 
+
+  end
 
 end
 
@@ -261,7 +263,10 @@ function recvResponse()
 
 end
 
--- Required Modules (Receive Message)
+-- Import Required Module (Receive Message)
+-- Module Options are:
+-- recv_message_multi - Enables Multi Frame Responses (required for long data types)
+-- recv_message_single - Disables Multi Frame Resposes (skips/rejects responses for long data types)
 require (recv_message_multi)
 
 -- Process Payload Data

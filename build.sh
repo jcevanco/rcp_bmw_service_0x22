@@ -51,7 +51,7 @@ echo "Import Required Modules"
 
 # Get List of Required Modules
 cat $project_source/main.lua > $project_make/require.out
-sed -n -e '/require/s/.*(\(.*\)).*/\1/p' $project_make/require.out | while read i
+sed -n -e '/require/s/.*require (\(.*\)).*/\1/p' $project_make/require.out | while read i
 do
     # Import Required Module
     echo "Module: $i.lua"
@@ -71,8 +71,8 @@ sed -e '/onTick/d' | \
 while read i
 do
     # Minimize Function Name in Script
-    echo "Function: $i"
     j=`echo "$i" | sed -n -e 's/\([a-z]\).*\([A-Z]\).*/_\1\2/p'`
+    echo "Function: $i -> $j"
     sed -e "s/$i(/$j(/g" -i'.sed' $project_make/functions.out
 done
 
