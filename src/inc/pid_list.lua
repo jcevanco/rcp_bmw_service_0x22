@@ -58,6 +58,7 @@
 
 -- Sample PID Configuration. One PID for each data type supported.
 --
+
 local gc_list = {
   -- char data type (8-Bit Integer)
   [ 0x5512 ] = {0x12, 'AmbientTemp',  1, 1, 0, 200,    'F',     'u', 0.9, 1, -40},

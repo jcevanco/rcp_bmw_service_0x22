@@ -5,4 +5,5 @@
 --
 -- Select BMW OBD Service 0x22 PID Maps Available at
 -- https://thesecretingredient.neocities.org
+-- https://github.com/jcevanco/rcp_bmw_service_0x22.git
 --
