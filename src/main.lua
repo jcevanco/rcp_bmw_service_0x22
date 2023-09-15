@@ -265,11 +265,11 @@ function recvResponse()
 
 end
 
--- Import Required Module (Receive Message)
+-- Import Required Modules (Receive Message)
 -- Module Options are:
 -- recv_message_multi - Enables Multi Frame Responses (required for long data types)
 -- recv_message_single - Disables Multi Frame Resposes (skips/rejects responses for long data types)
-require (recv_message_single)
+require (recv_message_multi)
 
 -- Process Payload Data
 function processData(id, data)
