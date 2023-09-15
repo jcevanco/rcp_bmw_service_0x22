@@ -139,7 +139,7 @@ setCANfilter(gc_can, 0, 0, gc_resp_id, gc_resp_msk)
 for key, table in pairs(gc_list) do
 
   -- Create RaceCapture Virtual Channel and Set Initial Chanel Statistics
-  table[12] = addChannel(string.sub(table[2], 1, 11), unpack(table, 3, 6), string.sub(table[7], 1, 7))
+  table[12] = addChannel(string.sub(table[2], 1, 11), table[3], table[4], table[5], table[6], string.sub(table[7], 1, 7))
   table[13], table[14], table[15], table[16], table[17] = 0, 0, 0, 0, 0
 
   -- Set Max Priority (Used by Query Scheduler)
@@ -293,12 +293,15 @@ function processData(id, data)
         value = signedInteger(value, (data[2] - 3))
       end
 
+      -- Apply Value Scaling - ( raw_value * mul / div + add )
+      value = value * gc_list[key][9] / gc_list[key][10] + gc_list[key][11]
+
       -- Apply Configured Limits
-      if gc_list[key][5] ~= nil then value = math.max(value, gc_list[key][5]) end
-      if gc_list[key][6] ~= nil then value = math.min(value, gc_list[key][6]) end
+      value = ( gc_list[key][5] ~= nil and math.max(value, gc_list[key][5]) or value )
+      value = ( gc_list[key][6] ~= nil and math.min(value, gc_list[key][6]) or value )
       
       -- Update Channel Value
-      setChannel(gc_list[key][12], (value * gc_list[key][9] / gc_list[key][10] + gc_list[key][11]))
+      setChannel(gc_list[key][12], value)
 
       -- Log PID Statistics if Logging is Enabled
       if gc_stats == true then
