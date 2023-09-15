@@ -139,7 +139,8 @@ setCANfilter(gc_can, 0, 0, gc_resp_id, gc_resp_msk)
 for key, table in pairs(gc_list) do
 
   -- Create RaceCapture Virtual Channel and Set Initial Chanel Statistics
-  table[12] = addChannel(string.sub(table[2], 1, 11), table[3], table[4], table[5], table[6], string.sub(table[7], 1, 7))
+  table[2], table[7] = string.sub(table[2], 1, 11), string.sub(table[7], 1, 7)
+  table[12] = addChannel(unpack(table, 2, 7))
   table[13], table[14], table[15], table[16], table[17] = 0, 0, 0, 0, 0
 
   -- Set Max Priority (Used by Query Scheduler)

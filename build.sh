@@ -4,6 +4,44 @@
 # GNU General Public License v3.0
 #
 
+# Process Command Line Options
+tiny='0'
+while true
+do
+	# Test Parameters
+	case $1 in 
+		('-h')
+			echo \
+'
+      Usage: build.sh [-h|-t]
+      Where: -h : prints this help message, then exits
+             -t : builds final script with minimal header comments,
+                  full minimization and no post processing for script
+                  readability. Used to make the script as small (tiny) 
+                  as possible when experiencing memory limit issues 
+                  with RaceCapture hardware devices.
+
+Description: Builds the projct Lua script for loading into a RaceCapture
+             device. 
+
+       NOTE: This script has node module development environment 
+             dependancies. Run [npm insall] or [yarn install] to install
+             development environment dependancies.
+'
+			exit
+			;;
+
+		('') 
+			break
+			;;
+
+		('-t') 
+			tiny='1'
+			shift
+			;;
+	esac
+done
+
 # Get Project Name and Version
 project_name=`sed -n -e '/name/ { s/.*: "\(.*\)",/\1/p
                                   q
@@ -43,7 +81,14 @@ mkdir $project_build
 
 # Start Build With Comment Header
 echo "Building Project"
-cat $project_resource/head.lua > $project_make/make.out
+case $tiny in
+	('0')
+    cat $project_resource/head.lua > $project_make/make.out
+    ;;
+	('1')
+		head -n 4 $project_resource/head.lua > $project_make/make.out
+		;;
+esac
 
 # Import Required Modules
 echo
@@ -82,11 +127,18 @@ echo
 echo "Minimize Lua Script - luamin, $luamin_ver"
 node_modules/.bin/luamin -f $project_make/functions.out >> $project_make/make.out
 
-# Get sed Script for Post Processing
-SED_SCRIPT=`sed -e '/^#/d' $project_resource/sed.md`
+# Post Processing
+case $tiny in
+	('0')
+    # Get sed Script for Post Processing
+    SED_SCRIPT=`sed -e '/^#/d' $project_resource/sed.md`
 
-# Run sed Commands to Adjust Layout
-sed -e "$SED_SCRIPT" -i'.sed' $project_make/make.out
+    # Run sed Commands to Adjust Layout
+    sed -e "$SED_SCRIPT" -i'.sed' $project_make/make.out
+    ;;
+	('1')
+    ;;
+esac
 
 # Pruduce Assebmled Lua Script
 cat $project_make/make.out | sed -e "s/<version>/$project_version/g" > "$project_build/$project_name.lua"

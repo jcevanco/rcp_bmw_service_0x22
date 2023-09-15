@@ -1,6 +1,6 @@
 {
 	"name": "rcp_bmw_service_0x22",
-	"version": "5.2.0",
+	"version": "5.2.1",
 	"description": "Lua script for use with RaceCapture motorsports telemetry systems. This script enables RaceCapture systems to perform OBDII Service 0x22 querries on BMW vehicles.",
   "repository": {
     "type": "git",
@@ -13,6 +13,8 @@
   "dependencies": {
   },
   "scripts": {
+    "build": "sh build.sh",
+    "tiny": "sh build.sh -t"
   },
   "devDependencies": {
     "luamin": "^1.0.4",
