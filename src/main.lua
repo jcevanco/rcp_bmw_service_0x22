@@ -17,6 +17,7 @@
 --
 -- Select BMW OBD Service 0x22 PID Maps Available at
 -- https://thesecretingredient.neocities.org
+-- https://github.com/jcevanco/rcp_bmw_service_0x22.git
 --
 -- Due to the size of this script and memory limitations of the RaceCapture
 -- hardware, this script must be pre-processed by a Lua script minifier prior 
@@ -84,7 +85,7 @@
 --
 
 -- Import Required Module (PID Configuration)
-require (pid_list)
+require (pid_supra)
 
 -- Define Battery Voltage threshold for Polling.
 -- Service 0x22 PID Requestes will not be sent if the
@@ -267,7 +268,7 @@ end
 -- Module Options are:
 -- recv_message_multi - Enables Multi Frame Responses (required for long data types)
 -- recv_message_single - Disables Multi Frame Resposes (skips/rejects responses for long data types)
-require (recv_message_multi)
+require (recv_message_single)
 
 -- Process Payload Data
 function processData(id, data)
