@@ -85,7 +85,7 @@
 --
 
 -- Import Required Module (PID Configuration)
-require (pid_supra)
+require (pid_list)
 
 -- Define Battery Voltage threshold for Polling.
 -- Service 0x22 PID Requestes will not be sent if the
