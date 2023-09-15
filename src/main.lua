@@ -269,7 +269,7 @@ end
 -- Module Options are:
 -- recv_message_multi - Enables Multi Frame Responses (required for long data types)
 -- recv_message_single - Disables Multi Frame Resposes (skips/rejects responses for long data types)
-require (recv_message_multi)
+require (recv_message_single)
 
 -- Process Payload Data
 function processData(id, data)
