@@ -5,6 +5,8 @@ GNU General Public License v3.0
 
 Lua script for use with RaceCapture motorsports telemetry systems. This script enables RaceCapture systems to perform OBDII Service 0x22 querries on BMW vehicles.
 
+Additinal information available at: https://thesecretingredient.neocities.org
+
 ### Environment Setup
 
 Make sure that you have the node module dependancies installed:
