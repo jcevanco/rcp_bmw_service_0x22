@@ -19,7 +19,7 @@
 -- https://thesecretingredient.neocities.org
 -- https://github.com/jcevanco/rcp_bmw_service_0x22.git
 --
-
+--
 -- The OBD Service 0x22 PID List is configured in Lua Key-Table Pairs as follows.
 -- 
 -- [  KEY   ] = {                     TABLE                          },         
@@ -33,12 +33,12 @@
 --
 --  RaceCapture Virtual Channel Configuration
 --
---  2  - RaceCapture Channel Name (12 Character Maximum)
+--  2  - RaceCapture Channel Name (11 Character Maximum)
 --  3  - Priority (low - 1, 5, 10, 25, 50 - high) 
 --  4  - Precision (Number of decimals to display)
 --  5  - Minimum Value [optional - can be nil] 
 --  6  - Maximum Value [optional - can be nil]
---  7  - Engineering Units (8 Character Maximum)
+--  7  - Engineering Units (7 Character Maximum)
 --
 --  Raw Message Data Processing and Scaling
 --
@@ -47,7 +47,8 @@
 --  10 - Divide
 --  11 - Add
 --
---  Channel Status Data used by Script.
+--  Channel Status & Statistical Data used by Script.
+--  These Items are not part of the User Configuration.
 --
 --  12 - RaceCapture Virtual Channel ID
 --  13 - Channel Priority (used by Query Scheduler)
@@ -55,9 +56,6 @@
 --  15 - Last Update (timestamp of last update)
 --  16 - Average Update Rate (ms)
 --  17 - Average Network Latency (ms)
---
-
--- Sample PID Configuration. One PID for each data type supported.
 --
 
 local gc_list = {

@@ -21,6 +21,11 @@ or
 yarn install
 ```
 
+
+### Personalization
+
+Edit `src/pid_list.lua` to supply your specific PID list to query.
+
 ### Build Lua Script For Loading into RaceCapture Device
 
 ```sh
@@ -32,7 +37,3 @@ if you are experiencing memory limit issues try the "tiny" option. It produces t
 ```sh
 sh build.sh -t
 ```
-
-### Personalization
-
-Edit `src/pid_list.lua` to supply your specific PID list to query.
