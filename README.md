@@ -26,6 +26,8 @@ yarn install
 
 Edit `src/pid_list.lua` to supply your specific PID list to query.
 
+PID Maps for certain vehicles can be found here: https://thesecretingredient.neocities.org/bmw
+
 ### Build Lua Script For Loading into RaceCapture Device
 
 ```sh
