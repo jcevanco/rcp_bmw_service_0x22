@@ -1,7 +1,7 @@
 {
-	"name": "rcp_bmw_service_0x22",
-	"version": "5.2.1",
-	"description": "Lua script for use with RaceCapture motorsports telemetry systems. This script enables RaceCapture systems to perform OBDII Service 0x22 querries on BMW vehicles.",
+  "name": "rcp_bmw_service_0x22",
+  "version": "5.2.1",
+  "description": "Lua script for use with RaceCapture motorsports telemetry systems. This script enables RaceCapture systems to perform OBDII Service 0x22 querries on BMW vehicles.",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/jcevanco/rcp_bmw_service_0x22.git"
@@ -10,24 +10,23 @@
     "name": "Chris Evanco",
     "email": "jcevanco@hotmail.com"
   },
-  "dependencies": {
-  },
+  "dependencies": {},
   "scripts": {
     "build": "sh build.sh",
     "tiny": "sh build.sh -t"
   },
   "devDependencies": {
     "luamin": "^1.0.4",
-    "rimraf": "^5.0.1"
+    "rimraf": "^5.0.5"
   },
   "keywords": [
     "lua",
-		"racecapture",
-		"autosportlabs",
-		"motorsports",
-		"obdii",
-		"bmw"
- ],
+    "racecapture",
+    "autosportlabs",
+    "motorsports",
+    "obdii",
+    "bmw"
+  ],
   "license": "GNU General Public License v3.0",
   "homepage": "https://thesecretingredient.neocities.org"
 }

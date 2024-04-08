@@ -1,5 +1,5 @@
 -- RCP BMW Servie 0x22 Script
--- Copyright (c) 2023 The SECRET Ingredient!
+-- Copyright (c) 2024 The SECRET Ingredient!
 -- GNU General Public License v3.0
 --
 -- This is free software: you can redistribute it and/or modify it
