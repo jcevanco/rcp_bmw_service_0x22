@@ -17,7 +17,7 @@
   },
   "devDependencies": {
     "luamin": "^1.0.4",
-    "rimraf": "^5.0.5"
+    "rimraf": "^6.0.1"
   },
   "keywords": [
     "lua",
@@ -27,6 +27,6 @@
     "obdii",
     "bmw"
   ],
-  "license": "GNU General Public License v3.0",
+  "license": "GPL-3.0-or-later",
   "homepage": "https://thesecretingredient.neocities.org"
 }

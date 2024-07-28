@@ -317,6 +317,24 @@ function logCANData(bus, id, data)
 
 end
 
+-- Virtual Boost Channel Implementation
+local boostID = addChannel('Boost', 50, 2, 0, 30, 'psi')
+
+function virtualBoost(min, max)
+  
+  local P1 = getChannel('AAP')
+  local P2 = getChannel('MAP')
+  local vBoost = min
+  
+  if P1 ~= nil and P2 ~= nil then 
+      vBoost = math.min(math.max((P2 - P1) * 14.696 / 101.325, min), max)
+  end
+  
+  return vBoost 
+
+end
+-- Virtual Boost Channel Implementation
+
 -- Process Tick Events 
 function onTick()
 
@@ -327,8 +345,13 @@ function onTick()
   end
 
   -- Check For Vehicle Running and Send PID Requests
-  if (getChannel("Battery") ~= nil) and (getChannel("Battery") >= gc_threshold) then
-    sendQuery()
+  if (getChannel("Battery") ~= nil) then
+    if (getChannel("Battery") >= gc_threshold) then
+      sendQuery()
+    end
   end
+
+  -- Process Virtual Channels
+  setChannel(boostID, virtualBoost(0, 30))
 
 end
