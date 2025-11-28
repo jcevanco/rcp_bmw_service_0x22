@@ -54,11 +54,6 @@
 -- Import Required Module (PID Configuration)
 require (pid_list)
 
--- Define Battery Voltage threshold for Polling.
--- Service 0x22 PID Requestes will not be sent if the
--- Battery Voltage is below this threshold
-local gc_threshold = 13.5
-
 -- BMW Service 0x22 Messaging
 local gc_send_id  = 0X6F1
 local gc_send_msk = 0x0FF
@@ -344,12 +339,8 @@ function onTick()
     g_garbage = getUptime() 
   end
 
-  -- Check For Vehicle Running and Send PID Requests
-  if (getChannel("Battery") ~= nil) then
-    if (getChannel("Battery") >= gc_threshold) then
-      sendQuery()
-    end
-  end
+  -- Send PID Requests
+  sendQuery()
 
   -- Process Virtual Channels
   setChannel(boostID, virtualBoost(0, 30))
